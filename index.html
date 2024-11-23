@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5s9 Blog</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1B1B3A;
+            --violet: #673AB7;
+            --grey: #8C8C8C;
+            --light-grey: #F5F5F5;
+            --accent: #2196F3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            background-color: var(--light-grey);
+            color: var(--navy);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -250px;
+            top: 0;
+            height: 100%;
+            width: 250px;
+            background-color: var(--navy);
+            transition: 0.3s;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            background: linear-gradient(45deg, var(--navy), var(--violet));
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .article-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--light-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--grey);
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            color: var(--violet);
+        }
+
+        .action-btn.favorite.active {
+            color: #e91e63;
+        }
+
+        .share-btn {
+            position: relative;
+        }
+
+        .share-popup {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .share-popup.active {
+            display: block;
+        }
+
+        /* Rest of your existing styles... */
+        .sidebar-nav {
+    padding: 1rem;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+}
+
+.sidebar-nav li {
+    margin-bottom: 1rem;
+}
+
+.sidebar-nav a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: 0.3s;
+}
+
+.sidebar-nav a:hover {
+    background-color: var(--violet);
+}
+
+/* Hamburger Button */
+.hamburger {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1001;
+    background: var(--violet);
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.hamburger span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 5px 0;
+    transition: 0.3s;
+}
+
+/* Main Content */
+.content {
+    margin-left: 0;
+    padding: 1rem;
+    transition: 0.3s;
+}
+
+.content.shifted {
+    margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+    .content.shifted {
+        margin-left: 0;
+    }
+}
+
+/* Articles Grid */
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.article-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.article-content {
+    padding: 1.5rem;
+}
+
+.article-content h3 {
+    margin-bottom: 1rem;
+}
+
+.read-more {
+    display: inline-block;
+    background: var(--violet);
+    color: white;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+/* Full Article Page */
+.full-article {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.full-article-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    object-fit: cover;
+    max-height: 400px; /* You can adjust this value based on your needs */
+}
+
+.article-meta {
+    color: var(--grey);
+    margin-bottom: 1rem;
+}
+
+.favorite-btn {
+    background-color: var(--violet);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.favorite-btn.active {
+    background-color: var(--navy);
+}
+
+.article-preview {
+    max-height: 300px;
+    overflow: hidden;
+    position: relative;
+}
+
+.article-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(transparent, white);
+}
+
+.code-image {
+    background: #1e1e1e;
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+.article-meta {
+    color: var(--grey);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.article-meta .author {
+    font-weight: 500;
+    color: var(--violet);
+}
+
+.article-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: center;
+}
+
+.return-btn {
+    font-size: 1.2rem;
+    color: var(--grey);
+    transition: 0.3s;
+}
+
+.return-btn:hover {
+    color: var(--violet);
+}
+
+.full-article .article-footer {
+    margin-top: 2rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--light-grey);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+    </style>
+</head>
+<body>
+    <!-- Rest of your existing HTML structure... -->
+    <button class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>5s9 Blog</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#" onclick="showSection('all')">Tous les articles</a></li>
+                <li><a href="#" onclick="showSection('science')">Science</a></li>
+                <li><a href="#" onclick="showSection('code')">Code</a></li>
+                <li><a href="#" onclick="showSection('favorites')">Favoris</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="content" id="content">
+        <br/>
+        <div class="articles-grid" id="articles-container">
+            <!-- Articles will be injected here -->
+        </div>
+    </div>
+
+    <script src="articles.js"></script>
+    <script>
+        // Global variables
+let currentSection = 'all';
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+// Function to display articles
+function displayArticles(category = 'all') {
+    const container = document.getElementById('articles-container');
+    container.innerHTML = '';
+
+    const filteredArticles = category === 'all' 
+        ? articles 
+        : category === 'favorites' 
+            ? articles.filter(article => favorites.includes(article.id.toString()))
+            : articles.filter(article => article.category === category);
+
+    filteredArticles.forEach(article => {
+        const articleElement = createArticleCard(article);
+        container.appendChild(articleElement);
+    });
+}
+
+        // Update the createArticleCard function to include author and use preview-specific IDs:
+function createArticleCard(article) {
+    const div = document.createElement('div');
+    div.className = 'article-card';
+    div.innerHTML = `
+        <section id="preview-${article.id}" class="article-section">
+            <img src="${article.image}" alt="${article.title}">
+            <div class="article-content">
+                <h3>${article.title}</h3>
+                <div class="article-meta">
+                    <span class="author">Par ${article.author}</span> • 
+                    <span class="date">${article.date}</span>
+                </div>
+                <p>${article.preview}</p>
+                <button onclick="showFullArticle(${article.id})" class="read-more">Lire la suite</button>
+            </div>
+            <div class="article-footer">
+                <div class="action-buttons">
+                    <button class="action-btn share-btn" onclick="shareArticle(${article.id}, 'preview')">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="action-btn favorite ${favorites.includes(article.id.toString()) ? 'active' : ''}" 
+                            onclick="toggleFavorite('${article.id}')">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    `;
+    return div;
+}
+        
+function showFullArticle(id) {
+    const article = articles.find(a => a.id === id);
+    const container = document.getElementById('articles-container');
+    container.innerHTML = `
+        <div class="full-article" id="full-${article.id}">
+            <img src="${article.image}" alt="${article.title}" class="full-article-image">
+            ${article.content}
+            <div class="article-footer">
+                <button class="action-btn return-btn" onclick="displayArticles('all')">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="action-buttons">
+                    <button class="action-btn share-btn" onclick="shareArticle(${article.id}, 'full')">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button class="action-btn favorite ${favorites.includes(article.id.toString()) ? 'active' : ''}" 
+                            onclick="toggleFavorite('${article.id}')">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Function to show specific section
+function showSection(section) {
+    currentSection = section;
+    displayArticles(section);
+    // Close the sidebar after selecting a section
+    sidebar.classList.remove('active');
+    content.classList.remove('shifted');
+}
+
+        // Update the shareArticle function to handle different IDs for preview and full articles:
+function shareArticle(articleId, view) {
+    const url = `${window.location.origin}${window.location.pathname}#${view}-${articleId}`;
+    const shareData = {
+        title: articles.find(a => a.id === articleId).title,
+        url: url
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData);
+    } else {
+        const tempInput = document.createElement('input');
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Lien copié dans le presse-papier!');
+    }
+}
+
+        // Modified favorite functionality
+        function toggleFavorite(articleId) {
+            const index = favorites.indexOf(articleId);
+            const btn = document.querySelector(`button[onclick="toggleFavorite('${articleId}')"]`);
+            
+            if (index === -1) {
+                favorites.push(articleId);
+                btn.classList.add('active');
+            } else {
+                favorites.splice(index, 1);
+                btn.classList.remove('active');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            if (currentSection === 'favorites') {
+                displayArticles('favorites');
+            }
+        }
+
+        // Update the hash change handler to handle both preview and full article IDs:
+window.addEventListener('hashchange', () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const [view, id] = hash.substring(1).split('-');
+        const articleId = parseInt(id);
+        
+        if (view === 'full') {
+            showFullArticle(articleId);
+        } else if (view === 'preview') {
+            displayArticles();
+            const article = document.getElementById(`preview-${articleId}`);
+            if (article) {
+                article.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    }
+});
+        
+        // Hamburger menu functionality
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const content = document.getElementById('content');
+
+hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    content.classList.toggle('shifted');
+});
+
+// Close sidebar when clicking outside
+document.addEventListener('click', (e) => {
+    if (!sidebar.contains(e.target) && !hamburger.contains(e.target) && sidebar.classList.contains('active')) {
+        sidebar.classList.remove('active');
+        content.classList.remove('shifted');
+    }
+});
+
+        // Initialize
+        displayArticles();
+    </script>
+</body>
+</html>
